@@ -44,7 +44,8 @@ void draw() {
       kinect.update();
       
       //Display rgb image sidelong the drawing (regular camera)
-      image(kinect.rgbImage(), 0, 480);
+      // (optional, but helpful to see self)
+      // image(kinect.rgbImage(), 0, 480);
       
       
       // get the depth array from the kinect
@@ -74,6 +75,7 @@ void draw() {
   
   // Add new values to the beginning
   
+  //Y graph, moves across screen hoziontally, left to right
   y[0] = closestY;
   // Display each pair of values as a line
   for (int i = 1; i < y.length; i++) {
@@ -81,6 +83,7 @@ void draw() {
     line(i, y[i], i-1, y[i-1]);
   }
   
+  //X graph, move across screen vertically, top to bottom 
   // Add new values to the beginning
   x[0] = closestX;
   // Display each pair of values as a line
@@ -89,6 +92,7 @@ void draw() {
     line(x[i], i, x[i-1], i-1);
   }
   
+
   x2[0] = closestX;
   y2[0] = closestY;
   // Draw the circles
