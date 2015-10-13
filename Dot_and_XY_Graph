@@ -1,0 +1,100 @@
+import SimpleOpenNI.*;
+SimpleOpenNI kinect;
+    
+int closestValue; 
+int closestX;
+int closestY;
+
+int[] y;
+int[] x;
+
+int num = 50;
+int[] x2 = new int[num];
+int[] y2 = new int[num];
+
+
+void setup() {
+  size(640, 480*2);
+  kinect = new SimpleOpenNI(this);
+  kinect.enableDepth();
+  kinect.enableRGB();
+  y = new int[width];
+  x = new int[height];
+}
+
+void draw() {
+  background(0); 
+  // Read the array from the end to the
+  // beginning to avoid overwriting the data
+  for (int i = y.length-1; i > 0; i--) {
+    y[i] = y[i-1];
+  }
+  
+  for (int i = x.length-1; i > 0; i--) {
+    x[i] = x[i-1];
+  }
+  
+  for (int i = num-1; i > 0; i--) {
+    x2[i] = x2[i-1];
+    y2[i] = y2[i-1];
+  }
+  
+  closestValue = 8000; 
+
+      kinect.update();
+      
+      //Display rgb image sidelong the drawing (regular camera)
+      image(kinect.rgbImage(), 0, 480);
+      
+      
+      // get the depth array from the kinect
+      int[] depthValues = kinect.depthMap();
+      
+      // for each row in the depth image 
+      for(int y = 0; y < 480; y++)
+      {
+            // look at each pixel in the row
+            for(int x = 0; x < 640; x++)
+            {
+                   // pull out the corresponding value from the depth array 
+                   int i = x + y * 640;
+                   int currentDepthValue = depthValues[i];
+
+                    // if that pixel is the closest one we've seen so far 
+                    if(currentDepthValue > 0 && currentDepthValue < closestValue)
+                    {
+                      // save its value
+                      closestValue = currentDepthValue;
+                      // and save its position (both X and Y coordinates)
+                      closestX = x;
+                      closestY = y;
+                     }
+            }
+     }
+  
+  // Add new values to the beginning
+  
+  y[0] = closestY;
+  // Display each pair of values as a line
+  for (int i = 1; i < y.length; i++) {
+    stroke(43, 91, 126);
+    line(i, y[i], i-1, y[i-1]);
+  }
+  
+  // Add new values to the beginning
+  x[0] = closestX;
+  // Display each pair of values as a line
+  for (int i = 1; i < x.length; i++) {
+    stroke(91, 73, 108);
+    line(x[i], i, x[i-1], i-1);
+  }
+  
+  x2[0] = closestX;
+  y2[0] = closestY;
+  // Draw the circles
+  for (int i = 0; i < num; i++) {
+    noStroke();
+    fill(255, 255, 255, 50);
+    ellipse(x2[i], y2[i], i/2.0, i/2.0);
+  }
+}
